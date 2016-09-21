@@ -64,6 +64,9 @@ void Curve::drawCurve(Color curveColor, float curveThickness, int window)
 		start = end;
 	}
 
+	end = controlPoints[controlPoints.size() - 1].position;
+	DrawLib::drawLine(start, end, curveColor, curveThickness);
+
 	// Robustness: make sure there is at least two control point: start and end points
 	// Move on the curve from t=0 to t=finalPoint, using window as step size, and linearly interpolate the curve points
 	// Note that you must draw the whole curve at each frame, that means connecting line segments between each two points on the curve
