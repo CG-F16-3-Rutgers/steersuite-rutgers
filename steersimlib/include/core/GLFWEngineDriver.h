@@ -19,21 +19,23 @@
 #ifdef ENABLE_GLFW
 
 #include "SteerLib.h"
+#include "interfaces/EngineControllerInterface.h"
+#include "simulation/SimulationEngine.h"
 #include "glfw/include/GL/glfw.h"
 #include "util/FrameSaver.h"
 
 /**
- * @brief A GUI back-end that controls a SteerLib::SimulationEngine.
- *
- * This back-end is used to visualize the contents of a simulation interactively.
- *
- * This class uses GLFW, which is more recent than the traditional GLUT.  Like GLUT, 
- * GLFW is pure C, so it can only invoke callbacks trhough static non-member wrappers.
- * Because of this, this class uses a singleton design pattern.
- *
- * @see
- *   - CommandLineEngineDriver to control a SimulationEngine without a GUI.
- */
+* @brief A GUI back-end that controls a SteerLib::SimulationEngine.
+*
+* This back-end is used to visualize the contents of a simulation interactively.
+*
+* This class uses GLFW, which is more recent than the traditional GLUT.  Like GLUT,
+* GLFW is pure C, so it can only invoke callbacks trhough static non-member wrappers.
+* Because of this, this class uses a singleton design pattern.
+*
+* @see
+*   - CommandLineEngineDriver to control a SimulationEngine without a GUI.
+*/
 class STEERLIB_API GLFWEngineDriver : public SteerLib::EngineControllerInterface
 {
 public:
@@ -61,10 +63,10 @@ public:
 	virtual bool isStartupControlSupported() { return false; }
 	virtual bool isPausingControlSupported() { return true; }
 	virtual bool isPaused() { return _paused; }
-	virtual void loadSimulation() { throw Util::GenericException("GLFWEngineDriver does not support loadSimulation()."); }
-	virtual void unloadSimulation() { throw Util::GenericException("GLFWEngineDriver does not support unloadSimulation()."); }
-	virtual void startSimulation() { throw Util::GenericException("GLFWEngineDriver does not support startSimulation()."); }
-	virtual void stopSimulation() { throw Util::GenericException("GLFWEngineDriver does not support stopSimulation()."); }
+	virtual void loadSimulation();
+	virtual void unloadSimulation();
+	virtual void startSimulation();
+	virtual void stopSimulation();
 	virtual void pauseSimulation() { _paused = true; }
 	virtual void unpauseSimulation() { _paused = false; }
 	virtual void togglePausedState() { _paused = !_paused; }
@@ -107,13 +109,18 @@ protected:
 
 	Util::FrameSaver * _frameSaver;
 
+	bool _pinchingObstacle;
+	SteerLib::ObstacleInterface* _pinchedObstacle;
+	float _beforePinchX;
+	float _beforePinchZ;
+
 
 private:
 	/// @brief These functions are private, and un-implemented, to protect against mangling the instance.
 	//@{
-	GLFWEngineDriver(const GLFWEngineDriver & );  // not implemented, not copyable
-	GLFWEngineDriver& operator= (const GLFWEngineDriver & );  // not implemented, not assignable
-	//@}
+	GLFWEngineDriver(const GLFWEngineDriver &);  // not implemented, not copyable
+	GLFWEngineDriver& operator= (const GLFWEngineDriver &);  // not implemented, not assignable
+															 //@}
 };
 
 
