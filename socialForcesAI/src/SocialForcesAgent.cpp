@@ -246,6 +246,7 @@ std::pair<float, Util::Point> minimum_distance(Util::Point l1, Util::Point l2, U
 }
 
 
+
 Util::Vector SocialForcesAgent::calcProximityForce(float dt)
 {
 	std::set<SteerLib::SpatialDatabaseItemPtr> _neighbors;
@@ -264,10 +265,9 @@ Util::Vector SocialForcesAgent::calcProximityForce(float dt)
 	for (std::set<SteerLib::SpatialDatabaseItemPtr>::iterator neighbour = _neighbors.begin();  neighbour != _neighbors.end();  neighbour++)
 	// for (int a =0; a < tmp_agents.size(); a++)
 	{
-		if ( (*neighbour)->isAgent() )
+		if ( (*neighbour)->isAgent())
 		{
 			tmp_agent = dynamic_cast<SteerLib::AgentInterface *>(*neighbour);
-
 			// direction away from other agent
 			Util::Vector away_tmp = normalize(position() - tmp_agent->position());
 			// std::cout << "away_agent_tmp vec" << away_tmp << std::endl;
@@ -441,21 +441,24 @@ Util::Vector SocialForcesAgent::calcAgentRepulsionForce(float dt)
 				(this));
 
 	SteerLib::AgentInterface * tmp_agent;
-
+	SteerLib::AgentGoalInfo tmp_agent_info;
 	for (std::set<SteerLib::SpatialDatabaseItemPtr>::iterator neighbour = _neighbors.begin();  neighbour != _neighbors.end();  neighbour++)
 	// for (int a =0; a < tmp_agents.size(); a++)
 	{
 		if ( (*neighbour)->isAgent() )
 		{
 			tmp_agent = dynamic_cast<SteerLib::AgentInterface *>(*neighbour);
+			 tmp_agent_info = tmp_agent->currentGoal();
 		}
 		else
 		{
 			continue;
 		}
-		if ( ( id() != tmp_agent->id() ) &&
+		/*if ( ( id() != tmp_agent->id() ) &&
 				(tmp_agent->computePenetration(this->position(), this->radius()) > 0.000001)
-			)
+				(tmp_agent->computePenetration(this->position(), this->radius()) > 0.000001)
+			)*/
+		if ((id() != tmp_agent->id()))
 		{
 		agent_repulsion_force = agent_repulsion_force +
 			( tmp_agent->computePenetration(this->position(), this->radius()) * _SocialForcesParams.sf_agent_body_force * dt) *
@@ -488,6 +491,12 @@ Util::Vector SocialForcesAgent::calcAgentRepulsionForce(float dt)
 				) * tangent * tanget_v_diff
 
 			);
+			if ( tmp_agent->id() == 0) {
+				agent_repulsion_force = tmp_agent->position() - position();
+			}
+			/*else if (id() == 1 && tmp_agent->id() == 2) {
+				agent_repulsion_force = -(tmp_agent->position() - position());
+			}*/
 		}
 
 	}
@@ -820,6 +829,7 @@ void SocialForcesAgent::updateAI(float timeStamp, float dt, unsigned int frameNu
 	}
 
 	_velocity = (prefForce) + repulsionForce + proximityForce;
+	//_velocity = Util::Vector(1.0,0,0);
 	// _velocity = (prefForce);
 	// _velocity = velocity() + repulsionForce + proximityForce;
 
